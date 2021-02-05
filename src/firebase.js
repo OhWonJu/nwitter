@@ -1,14 +1,7 @@
 import firebase from "firebase/app";
+import "firebase/auth";
 
 // Your web app's Firebase configuration
-// const firebaseConfig = {
-//   apiKey: "AIzaSyADU2QKL0NBDKZRZZrdnryWBZygQr4rMbI",
-//   authDomain: "nwitter-e50a1.firebaseapp.com",
-//   projectId: "nwitter-e50a1",
-//   storageBucket: "nwitter-e50a1.appspot.com",
-//   messagingSenderId: "1002505245092",
-//   appId: "1:1002505245092:web:b89bbe196a8d4c53bf3131",
-// };
 const firebaseConfig = {
   // 완전한 보안은 아님.. 환경변수를 github에서나 가려주는거..
   // firebase client 상에서는 js로 변환되면서 원래 값이 노출됨.
@@ -20,4 +13,6 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID,
 };
 // Initialize Firebase
-export default firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+
+export const authService = firebase.auth();
