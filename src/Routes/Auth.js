@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 
+import { authService } from "../firebase";
+
 // 이런 형식은 자동으로 import 해줌
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newAccount, setNewAccount] = useState(true);
 
   const onChange = event => {
     const {
@@ -15,8 +18,28 @@ const Auth = () => {
       setPassword(value);
     }
   };
-  const onSubmit = event => {
+  const onSubmit = async event => {
+    // evnet에 대한 기본 listener를 제거
     event.preventDefault();
+    try {
+      let data;
+      if (newAccount) {
+        // Create Account
+        data = await authService.createUserWithEmailAndPassword(
+          email,
+          password
+        );
+      } else {
+        // Log In
+        data = await authService.signInWithEmailAndPassword(
+          email,
+          password
+        );
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -24,7 +47,7 @@ const Auth = () => {
       <form onSubmit={onSubmit}>
         <input
           name="email"
-          type="text"
+          type="email"
           placeholder="Email"
           required
           value={email}
@@ -38,7 +61,7 @@ const Auth = () => {
           value={password}
           onChange={onChange}
         />
-        <input type="submit" value="Log In" />
+        <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
       </form>
       <div>
         <button>Continue with Google</button>
