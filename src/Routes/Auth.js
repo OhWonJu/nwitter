@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { authService } from "../firebase";
+import { authService, firebaseInstance } from "../firebase";
 
 // 이런 형식은 자동으로 import 해줌
 const Auth = () => {
@@ -32,10 +32,7 @@ const Auth = () => {
         );
       } else {
         // Log In
-        data = await authService.signInWithEmailAndPassword(
-          email,
-          password
-        );
+        data = await authService.signInWithEmailAndPassword(email, password);
       }
       console.log(data);
     } catch (error) {
@@ -43,8 +40,23 @@ const Auth = () => {
     }
   };
 
-  const toggleAccount = () => setNewAccount((prev) => !prev)
-  
+  const toggleAccount = () => setNewAccount(prev => !prev);
+
+  const onSocialClick = async event => {
+    const {
+      target: { name },
+    } = event;
+    let provider;
+
+    // signinwithpopup -> provider를 이용해햐 함...
+    if (name === "google") {
+      provider = new firebaseInstance.auth.GoogleAuthProvider();
+    } else if (name === "github") {
+      provider = new firebaseInstance.auth.GithubAuthProvider();
+    }
+
+    const data = await authService.signInWithPopup(provider);
+  };
 
   return (
     <div>
@@ -68,10 +80,14 @@ const Auth = () => {
         <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
         {error}
       </form>
-      <span onClick={toggleAccount}>{newAccount ? "Sign In": "Sign Up"}</span>
+      <span onClick={toggleAccount}>{newAccount ? "Sign In" : "Sign Up"}</span>
       <div>
-        <button>Continue with Google</button>
-        <button>Continue with Github</button>
+        <button name="google" onClick={onSocialClick}>
+          Continue with Google
+        </button>
+        <button name="github" onClick={onSocialClick}>
+          Continue with Github
+        </button>
       </div>
     </div>
   );
