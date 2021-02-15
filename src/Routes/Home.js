@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Nweet from "../Components/Nweet";
 
+import Nweet from "../Components/Nweet";
 import { dbService } from "../firebase";
 
 const Home = ({ userObj }) => {
