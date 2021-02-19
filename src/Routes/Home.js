@@ -52,14 +52,14 @@ const Home = ({ userObj }) => {
     // 기본적으로 collection과 비슷하게 작동.
     let attachmentURL = "";
 
-    if (attachment != "") {
+    if (attachment !== "") {
       const attachmentRef = storageService
         .ref()
         .child(`${userObj.uid}/file/${uuidv4()}`);
       const response = await attachmentRef.putString(attachment, "data_url");
       attachmentURL = await response.ref.getDownloadURL();
     }
-    
+
     const nweetObj = {
       creatorId: userObj.uid,
       createdAt: Date.now(),
