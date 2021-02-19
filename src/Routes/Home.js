@@ -6,6 +6,7 @@ import { dbService } from "../firebase";
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
+  const [attachment, setAttachment] = useState();
 
   // #3.3 이 방식은 오래된 데이터를 다시 불러온다.. 즉 쌓여서 새로고침이 필요함..
   // const getNweets = async () => {
@@ -37,12 +38,11 @@ const Home = ({ userObj }) => {
         setNweets(nweetsArray);
         // 이 방식이 re-render를 덜 하기 때문에
         // nweets에 중복으로 쌓이지 않는듯...
-
       });
-      // clean up func 똑같은 함수를 클린업에 넘겨야지, setNweets([array])
-      return () => {
-        setNweets([]);
-      };
+    // clean up func 똑같은 함수를 클린업에 넘겨야지, setNweets([array])
+    return () => {
+      setNweets([]);
+    };
   }, []);
 
   const onSubmit = async event => {
@@ -60,6 +60,26 @@ const Home = ({ userObj }) => {
     } = event;
     setNweet(value);
   };
+  const onFileChange = event => {
+    const {
+      target: { files },
+    } = event;
+    const theFile = files[0];
+    // fileReader API를 이용한 Reader
+    const reader = new FileReader();
+    reader.onloadend = finishedEvent => {
+      // event listener read가 끝나면 onloadend에 event를 전달...
+      const {
+        currentTarget: { result },
+      } = finishedEvent;
+      setAttachment(result);
+    };
+    reader.readAsDataURL(theFile); // URL형식으로 전달??
+  };
+  const onClearAttachment = () => {
+    setAttachment(null);   // state에서 제거
+    document.getElementById("Attachment").value = null; // input에서 제거
+  };
 
   return (
     <div>
@@ -71,11 +91,22 @@ const Home = ({ userObj }) => {
           placeholder="What'on your mind?"
           maxLength={120}
         />
+        <input id="Attachment" type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="Nweet" />
+        {attachment && (
+          <div>
+            <img src={attachment} width="50px" height="50px" />
+            <button onClick={onClearAttachment}>Clear</button>
+          </div>
+        )}
       </form>
       <div>
         {nweets.map(nweet => (
-          <Nweet key={nweet.id} nweetObj={nweet} isOwner={nweet.creatorId === userObj.uid}/>
+          <Nweet
+            key={nweet.id}
+            nweetObj={nweet}
+            isOwner={nweet.creatorId === userObj.uid}
+          />
         ))}
       </div>
     </div>
