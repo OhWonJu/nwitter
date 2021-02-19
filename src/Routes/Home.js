@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import Nweet from "../Components/Nweet";
-import { dbService } from "../firebase";
+import { dbService, storageService } from "../firebase";
 
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
@@ -47,12 +48,29 @@ const Home = ({ userObj }) => {
 
   const onSubmit = async event => {
     event.preventDefault();
-    await dbService.collection("nweets").add({
+    // photo가 있는 경우 사진을 먼저 upload 후 그 URL을 nweet에 추가
+    // 기본적으로 collection과 비슷하게 작동.
+    let attachmentURL = "";
+
+    if (attachment != "") {
+      const attachmentRef = storageService
+        .ref()
+        .child(`${userObj.uid}/file/${uuidv4()}`);
+      const response = await attachmentRef.putString(attachment, "data_url");
+      attachmentURL = await response.ref.getDownloadURL();
+    }
+    
+    const nweetObj = {
       creatorId: userObj.uid,
       createdAt: Date.now(),
       text: nweet,
-    });
+      attachmentURL,
+    };
+
+    await dbService.collection("nweets").add(nweetObj);
+    // state 초기화?
     setNweet("");
+    setAttachment(null);
   };
   const onChange = event => {
     const {
@@ -77,7 +95,7 @@ const Home = ({ userObj }) => {
     reader.readAsDataURL(theFile); // URL형식으로 전달??
   };
   const onClearAttachment = () => {
-    setAttachment(null);   // state에서 제거
+    setAttachment(null); // state에서 제거
     document.getElementById("Attachment").value = null; // input에서 제거
   };
 
@@ -91,7 +109,12 @@ const Home = ({ userObj }) => {
           placeholder="What'on your mind?"
           maxLength={120}
         />
-        <input id="Attachment" type="file" accept="image/*" onChange={onFileChange} />
+        <input
+          id="Attachment"
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+        />
         <input type="submit" value="Nweet" />
         {attachment && (
           <div>
