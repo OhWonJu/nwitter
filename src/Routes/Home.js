@@ -7,7 +7,7 @@ import { dbService, storageService } from "../firebase";
 const Home = ({ userObj }) => {
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
-  const [attachment, setAttachment] = useState();
+  const [attachment, setAttachment] = useState("");
 
   // #3.3 이 방식은 오래된 데이터를 다시 불러온다.. 즉 쌓여서 새로고침이 필요함..
   // const getNweets = async () => {
@@ -70,7 +70,7 @@ const Home = ({ userObj }) => {
     await dbService.collection("nweets").add(nweetObj);
     // state 초기화?
     setNweet("");
-    setAttachment(null);
+    setAttachment("");
   };
   const onChange = event => {
     const {
