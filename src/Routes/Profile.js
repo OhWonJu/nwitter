@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import { authService, dbService } from "../firebase";
 
-const Profile = ({ userObj }) => {
+const Profile = ({ userObj, refreshUser }) => {
   // 각 routes에서 직접 rediect하는 방법. -> router를 hook으로써 사용
   const history = useHistory();
   const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
@@ -25,6 +25,7 @@ const Profile = ({ userObj }) => {
     if (userObj.displayName !== newDisplayName) {
       await userObj.updateProfile({ displayName: newDisplayName });
     }
+    refreshUser();
   };
 
   const getMyNweets = async () => {

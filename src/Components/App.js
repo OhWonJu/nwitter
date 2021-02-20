@@ -17,7 +17,12 @@ function App() {
       if (user) {
         // user Logged In
         setIsLoggedIn(true);
-        setUserObj(user);
+        //setUserObj(user)
+        setUserObj({
+          displayName: user.displayName,
+          uid: user.uid,
+          updateProfile: (args) => user.updateProfile(args),
+        });
       } else {
         setIsLoggedIn(false);
         setUserObj(null);
@@ -26,10 +31,21 @@ function App() {
     });
   }, []);
 
+  // user 변경점에 대해 refresh
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    //setUserObj(Object.assign({}, user));
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+      updateProfile: (args) => user.updateProfile(args),
+    });
+  }
+
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} />
+        <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} refreshUser={refreshUser} />
       ) : (
         "Initializing ..."
       )}
