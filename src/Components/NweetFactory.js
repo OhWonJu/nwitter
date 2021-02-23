@@ -76,7 +76,7 @@ const NweetFactory = ({ userObj }) => {
           maxLength={120}
           className="factoryInput__input"
         />
-        <input type="submit" value="&rarr;" className="factoryInput_arrow" />
+        <input type="submit" value="&rarr;" className="factoryInput__arrow" />
       </div>
       <label htmlFor="attach_file" className="factoryInput__label">
         <span>Add Photo</span>
