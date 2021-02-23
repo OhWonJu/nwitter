@@ -11,6 +11,7 @@ const Profile = ({ userObj, refreshUser }) => {
   const onSignOutClick = () => {
     authService.signOut();
     history.push("/");
+    refreshUser();
   };
 
   const onChange = event => {
@@ -43,18 +44,27 @@ const Profile = ({ userObj, refreshUser }) => {
   }, []);
 
   return (
-    <>
-      <form onSubmit={onSubmit}>
+    <div className="container">
+      <form onSubmit={onSubmit} className="profileForm">
         <input
           type="text"
           placeholder="Display Name"
           onChange={onChange}
           value={newDisplayName}
+          autoFocus
+          className="formInput"
         />
-        <input type="submit" value="Update Profile" />
+        <input
+          type="submit"
+          value="Update Profile"
+          className="formBtn"
+          style={{ marginTop: 10 }}
+        />
       </form>
-      <button onClick={onSignOutClick}>Sign Out</button>
-    </>
+      <span className="formBtn cancelBtn logOut" onClick={onSignOutClick}>
+        Sign Out
+      </span>
+    </div>
   );
 };
 

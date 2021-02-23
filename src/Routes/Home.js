@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import Nweet from "../Components/Nweet";
+import NweetFactory from "../Components/NweetFactory";
 import { dbService, storageService } from "../firebase";
 
 const Home = ({ userObj }) => {
-  const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
-  const [attachment, setAttachment] = useState("");
 
   // #3.3 이 방식은 오래된 데이터를 다시 불러온다.. 즉 쌓여서 새로고침이 필요함..
   // const getNweets = async () => {
@@ -46,84 +44,10 @@ const Home = ({ userObj }) => {
     };
   }, []);
 
-  const onSubmit = async event => {
-    event.preventDefault();
-    // photo가 있는 경우 사진을 먼저 upload 후 그 URL을 nweet에 추가
-    // 기본적으로 collection과 비슷하게 작동.
-    let attachmentURL = "";
-
-    if (attachment !== "") {
-      const attachmentRef = storageService
-        .ref()
-        .child(`${userObj.uid}/file/${uuidv4()}`);
-      const response = await attachmentRef.putString(attachment, "data_url");
-      attachmentURL = await response.ref.getDownloadURL();
-    }
-
-    const nweetObj = {
-      creatorId: userObj.uid,
-      createdAt: Date.now(),
-      text: nweet,
-      attachmentURL,
-    };
-
-    await dbService.collection("nweets").add(nweetObj);
-    // state 초기화?
-    setNweet("");
-    setAttachment("");
-  };
-  const onChange = event => {
-    const {
-      target: { value },
-    } = event;
-    setNweet(value);
-  };
-  const onFileChange = event => {
-    const {
-      target: { files },
-    } = event;
-    const theFile = files[0];
-    // fileReader API를 이용한 Reader
-    const reader = new FileReader();
-    reader.onloadend = finishedEvent => {
-      // event listener read가 끝나면 onloadend에 event를 전달...
-      const {
-        currentTarget: { result },
-      } = finishedEvent;
-      setAttachment(result);
-    };
-    reader.readAsDataURL(theFile); // URL형식으로 전달??
-  };
-  const onClearAttachment = () => {
-    setAttachment(null); // state에서 제거
-    document.getElementById("Attachment").value = null; // input에서 제거
-  };
-
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input
-          value={nweet}
-          onChange={onChange}
-          type="text"
-          placeholder="What'on your mind?"
-          maxLength={120}
-        />
-        <input
-          id="Attachment"
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-        />
-        <input type="submit" value="Nweet" />
-        {attachment && (
-          <div>
-            <img src={attachment} width="50px" height="50px" />
-            <button onClick={onClearAttachment}>Clear</button>
-          </div>
-        )}
-      </form>
-      <div>
+    <div className="container">
+      <NweetFactory userObj={userObj} />
+      <div className="nweetForm">
         {nweets.map(nweet => (
           <Nweet
             key={nweet.id}

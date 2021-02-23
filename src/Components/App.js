@@ -21,7 +21,7 @@ function App() {
         setUserObj({
           displayName: user.displayName,
           uid: user.uid,
-          updateProfile: (args) => user.updateProfile(args),
+          updateProfile: args => user.updateProfile(args),
         });
       } else {
         setIsLoggedIn(false);
@@ -38,14 +38,18 @@ function App() {
     setUserObj({
       displayName: user.displayName,
       uid: user.uid,
-      updateProfile: (args) => user.updateProfile(args),
+      updateProfile: args => user.updateProfile(args),
     });
-  }
+  };
 
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} refreshUser={refreshUser} />
+        <AppRouter
+          isLoggedIn={isLoggedIn}
+          userObj={userObj}
+          refreshUser={refreshUser}
+        />
       ) : (
         "Initializing ..."
       )}
